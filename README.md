@@ -1,11 +1,8 @@
 
 ## ESP32-H2 Zigbee device
+Following the excellent video from gammatroniques presenting the ESP32-H2 module for Zigbee device usage, I wanted to compile the information gathered about this module as well as its usage with Zigbee2MQTT.
 
-Suite à l'exellente vidéo de [gammatroniques](https://beta.gammatroniques.fr/projects/esp32h2-zigbee) présentant le module ESP32-H2 pour un usage en *device* Zigbee, 
-j'ai voulu regrouper les information recueillis sur ce module ainsi que de son utlisation avec **Zigbee2MQTT**.
-
-Les tests ont été réalisés sur le module **ESP32-H2-DevKitM-1**
-
+The tests were conducted on the ESP32-H2-DevKitM-1 module
 <br>
 
 ### Description
@@ -85,11 +82,12 @@ ESP32-H2 is an ultra-low-power Internet of Things (IoT) solution offering multip
 
 ### Programmation
 
-#### VsCode
+### VsCode
 
 ![](./images/VScode_ESP32-H2_1.png)
 
-* Installer **vscode** sous Debian
+
+* To install VSCode on Debian:
 
 ```Bash
   apt update
@@ -101,25 +99,22 @@ ESP32-H2 is an ultra-low-power Internet of Things (IoT) solution offering multip
   apt install git wget flex bison gperf python3 python3-pip python3-venv cmake ninja-build ccache libffi-dev libssl-dev dfu-util libusb-1.0-0
 ```
 
-* Configurer **vscode**
-  - Installer extension Espressif IDF
-  - Choisir le répertoire de travail avec l'exemple **smoke_detector**
-  - La fenetre ESP-DF setup Setup apparrait
-  - Choisir mode d'install **advanced**, **branch master (dev branch)**, changer répertoire d'install **/home/<user>/.local/esp**
-  - Install (ignorer erreur concernant les tools)
-  - Download tools
-  - Message "All settings have been configured"
-  - Choisir le model de esp32 => h2 dans la ligne d'état *ESP-IDF set Expressif device target*"
-  - Lancer dans la ligne d'état  *ESP-IDF Build project*
-  - Choisir le port du module dans la ligne d'état *ESP-IDF select port to use*
-  - Flasher le module  dans la ligne d'état *ESP-IDF Flash device*
+Set up **VSCode**
+ Install the Espressif IDF extension
+ Choose the working directory with the example smoke_detector
+ The ESP-IDF setup window appears
+ Select the installation mode as advanced, branch master (dev branch), change the installation directory to /home/<user>/.local/esp
+ Install (ignore errors related to tools)
+ Download tools
+ Message "All settings have been configured"
+ Choose the ESP32 model => h2 in the status bar ESP-IDF set Expressif device target
+ Launch in the status bar ESP-IDF Build project
+ Select the module port in the status bar ESP-IDF select port to use
+ Flash the module in the status bar ESP-IDF Flash device
+  - 
+See in ~/.local/esp/esp-idf/examples/zigbee/ for other examples of Zigbee test codes.
 
-Voir dans **~/.local/esp/esp-idf/examples/zigbee/** d'autres exemples de codes de tests Zigbee.
-
-
-
-* Sortie console série
-
+Serial Console Output:
 
 ```
 ESP-ROM:esp32h2-20221101
@@ -222,13 +217,11 @@ I (368137) DEMO: Light sets to On
 I (368837) DEMO: Hum: 77.3 Tmp: 22.4
 I (408837) DEMO: Hum: 77.0 Tmp: 22.4
 ```
+*  **Erase the flash**
 
+If the code changes completely, it will be necessary to erase the module's flash and remove the device from Zigbee2MQTT.
 
-* **eraser la flash**
-
-Si le code change complétement, il faudra effacer la flash du module et supprimer le device de **Zigbee2MQTT**
-
-Dans vcode avec le dossier projet ouvert, aller dans le terminal de vscode
+In VSCode, with the project folder open, navigate to the VSCode terminal."
 
 ```
 $ idf.py -p /dev/ttyUSB0 erase-flash
@@ -251,26 +244,23 @@ Chip erase completed successfully in 1.6s
 Hard resetting via RTS pin...
 Done
 ```
-
-Il est possible d'exécuter la commande **idf.py** en dehors de **vscode**
+It is possible to execute the command idf.py outside of **VSCode**.
 
 `/home/<user>/.espressif/python_env/idf5.2_py3.11_env/bin/python /home/<user>/.local/esp/esp-idf/tools/idf.py`
 
+**   Zigbee2MQTT   **
+Tested on Zigbee2MQTT installed on Raspberry-Pi 3B with the PiZigate coordinator using the code from https://github.com/xmow49/ESP32H2-Zigbee-Demo flashed onto the ESP32-H2,
 
-### Zigbee2MQTT
+This program exposes the temperature and humidity from a DHT22, the state of a GPIO input with a push button, and an output connected to a LED. The parameters ManufacturerName, ModelIdentifier, DateCode have been changed in the code, and logs have been added to track the operation (I (xxxxx) DEMO: Domos: ...).
 
-Testé sur Zigbee2MQTT installé sur Raspberry-Pi 3B avec *coordinator* **PiZigate** avec le code <https://github.com/xmow49/ESP32H2-Zigbee-Demo> flashé sur l'**ESP32-H2**, 
+After the pairing, which occurs at the module's boot, the device appears in Zigbee2MQTT as device 0x4831b7fffec06c3b "Unsupported."
 
-Ce programme expose la **température** et l'**humidité** d'un *DHT22*, l'état d'un input de GPIO avec **poussoir** et une sortie relié à une **LED**. 
-Les paramètres **ManufacturerName**, **ModelIdentifier**, **DateCode** ont été changés dans le code et des logs ont été rajoutées pour suivre le fonctionnement (*I (xxxxx) DEMO: Domos: ...*)
-
-Aprés l'appairage qui se fait au *boot* du module, le device apparait dans **Zigbee2MQTT** comme device **0x4831b7fffec06c3b** "Non pris en charge"
 
 ![](./images/Zigbee2MQTT_1_ESP32-H2_1.png)
 
 ![](./images/Zigbee2MQTT_1_ESP32-H2_4.png)
 
-Il est possible d'interroger le *device* dans **Dev Console**  de **Zigbee2MQTT** et d'obtenir les **clusters** exposés:
+It is possible to query the **device** in the Dev Console of **Zigbee2MQTT** and obtain the exposed clusters:
 
 ```
 info 2023-10-09 18:34:48  Read result of 'genBasic': {"manufacturerName":"GammaTroniques","hwVersion":2,"appVersion":1,"modelId":"Demo","dateCode":"20230826"}
@@ -283,18 +273,15 @@ info 2023-10-16 17:37:42  Read result of 'msRelativeHumidity': {"measuredValue":
 
 ![](./images/Zigbee2MQTT_1_ESP32-H2_3.png)
 
+You need to follow the procedure on the 'Support new devices' page of the website https://www.zigbee2mqtt.io for the device to be recognized.
 
-Il faut suivre la procédure sur la page [Support new devices](https://www.zigbee2mqtt.io/advanced/support-new-devices/01_support_new_devices.html) du site <https://www.zigbee2mqtt.io> pour que le device soit reconnu
-
-La log de **Zigbee2MQTT** renseigne sur les type *cluster* à déclarer:
+The Zigbee2MQTT log provides information on the type of cluster to declare:"
 
 ```
 zigbee2mqtt    | Zigbee2MQTT:debug 2023-10-20 16:43:20: Received Zigbee message from '0x4831b7fffec06c3b', type 'attributeReport', cluster 'genBinaryInput', data '{"presentValue":0}' from endpoint 10 with groupID null
 zigbee2mqtt    | Zigbee2MQTT:debug 2023-10-20 16:43:20: No converter available for 'ESP32-H2_1' with cluster 'genBinaryInput' and type 'attributeReport' and data '{"presentValue":0}'
 ```
-
-
-Ajout du fichier **zigbee2mqtt-data/esp32-h2_1.js** (*external converter file*) (en m'inspirant des sources concernant les **devices/converters** existants sur <https://github.com/Koenkk/zigbee-herdsman-converters/tree/master/src>)
+Add the file zigbee2mqtt-data/esp32-h2_1.js (external converter file) (drawing inspiration from the sources concerning the existing devices/converters on https://github.com/Koenkk/zigbee-herdsman-converters/tree/master/src)
 
 ```js
 // https://github.com/Koenkk/zigbee-herdsman-converters/blob/master
@@ -318,8 +305,8 @@ const definition = {
 
 module.exports = definition;
 ```
+You need to add this line to zigbee2mqtt-data/configuration.yaml for it to take effect and restart **zigbee2mqtt**.
 
-Il faut ajouter cette ligne dans **zigbee2mqtt-data/configuration.yaml** pour prise en compte et redémarrer **zigbee2mqtt**
 
 ```yaml
 advanced:
@@ -327,8 +314,8 @@ advanced:
 external_converters:
   - esp32-h2_1.js
 ```
-
-Le module **ESP32-H2** est bien reconnu et les senseurs/actionneurs sont exposés dans l'interface **Zigbee2MQTT** aprés la prise en compte du fichier: 
+The ESP32-H2 module is properly recognized, and the sensors/actuators are exposed in the **Zigbee2MQTT** interface after the file is taken into account:
+ 
 
 ![](./images/Zigbee2MQTT_1_ESP32-H2_5.png)
 
